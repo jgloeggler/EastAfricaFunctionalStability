@@ -8,8 +8,7 @@ pacman::p_load(
   "corrplot", "deeptime"
 )
 
-destination_path <- "/images/"
-
+destination_path <- "images/"
 
 default_crs = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
 
@@ -41,7 +40,7 @@ genus_list <- genus_list |>
                             TRUE ~ Member
                             ))
 
-genus_traits <- read_csv("genus_traits.csv")
+genus_traits <- read_xlsx("genus_traits.xlsx")
 
 # Genus trait correlation matrix ------------------------------------------
 
@@ -239,7 +238,7 @@ p1, height = 20, width = 12)
 
 # read in environmental proxies -------------------------------------------
 
-mammal_enamel_isotopes <- read_csv("large_mammal_isotopes_20250906.csv") |> 
+mammal_enamel_isotopes <- read_xlsx("large_mammal_isotopes.xlsx") |> 
   mutate(Member = case_when(Formation == "Shungura" ~ paste0(Formation, " ", str_extract(Member, "^[A-Z]")), 
                             Region == "Tugen Hills" ~ Formation,
                             str_detect(Member, "Lomekwi") & !Member %in% c("Lower Lomekwi", "Upper Lomekwi") & mean_ma > 3 ~ "Lower Lomekwi",
@@ -252,7 +251,7 @@ mammal_enamel_isotopes <- read_csv("large_mammal_isotopes_20250906.csv") |>
   filter(n() >= 5) |> 
   ungroup()
 
-pedogenic_isotopes <-  read_csv("pedogenic_carbonate_isotopes_09052025.csv") |> 
+pedogenic_isotopes <-  read_xlsx("pedogenic_carbonate_isotopes.xlsx") |> 
   mutate(Member = case_when(
                             Formation == "Tugen Hills - modern" ~ "modern",
                             Region == "Tugen Hills" ~ Formation,
