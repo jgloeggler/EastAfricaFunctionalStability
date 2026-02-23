@@ -8,16 +8,8 @@ pacman::p_load(
   "corrplot", "deeptime"
 )
 
-where = "UNI" # UNI or HOME
+destination_path <- "/images/"
 
-where_onedrive <- c("UNI" = "gloggler", "HOME" = "jerem")[where]
-onedrive_path <- c("UNI" = "C:/Users/gloggler/OneDrive - University of Helsinki/Documents/PhD Publications/First Publication/Input/",
-                   "HOME" = "C:/Users/jerem/OneDrive - University of Helsinki/Documents/PhD Publications/First Publication/Input/")[where]
-
-destination_path <- c("UNI" = "C:/Users/gloggler/OneDrive - University of Helsinki/Documents/PhD Publications/First Publication/Manuscript1/images/",
-                      "HOME" = "C:/Users/jerem/OneDrive - University of Helsinki/Documents/PhD Publications/First Publication/Manuscript1/images/")[where]
-
-setwd(onedrive_path)
 
 default_crs = "+proj=longlat +datum=WGS84 +ellps=WGS84 +towgs84=0,0,0"
 
@@ -36,7 +28,7 @@ color_scheme <- c("East" = "#1C9E77",
 
 all_traits <- c("logBM", "HYP", "LOP", "AL", "ALX", "OL", "OLX", "GT", "BUN", "SF", "OT")
 
-genus_list <- read_csv("genus_number.csv")
+genus_list <- read_csv("genus_list.csv")
 
 genus_list <- genus_list |> 
   filter(
@@ -48,7 +40,6 @@ genus_list <- genus_list |>
                             str_detect(Member, "Lomekwi") & !Member %in% c("Lower Lomekwi", "Upper Lomekwi") & max_ma < 3 ~ "Upper Lomekwi",
                             TRUE ~ Member
                             ))
-# write.csv(genus_list, "genus_number.csv", row.names = F)
 
 genus_traits <- read_csv("genus_traits.csv")
 
@@ -100,7 +91,7 @@ min_genus_number_per_loc <- 5
 loc_mb_mean_scores <- left_join(genus_list, genus_traits,
                                 by = join_by(Genus)) |> 
 # filter by minimum body mass
-    filter(Body_Mass_Kg >= min_body_mass_kg|is.na(Genus)) |> 
+  filter(Body_Mass_Kg >= min_body_mass_kg|is.na(Genus)) |> 
 # impute traits at higher taxonomic levels
   mutate(grouping_variable = coalesce(Tribe, Subfamily, Family)) |> 
   group_by(grouping_variable) |> 
@@ -131,7 +122,6 @@ loc_mb_mean_scores <- left_join(genus_list, genus_traits,
                                             "UpperBurgi" = "Upper Burgi",
                                             "lower Kalochoro" = "Kalochoro")))
 
-
 # Plot temporal trends of functional traits -------------------------------
 
 plotlist <- list()
@@ -156,8 +146,8 @@ for (trait in all_traits){
       pos = as.list(rep("bottom", 2)),
       dat = list("stages", "epochs"),
       alpha = .5,
-      height = list(unit(1.6, "lines"), unit(1.6, "lines")),
-      rot = list(0, 0), size = list(8, 8), abbrv = list(TRUE, FALSE),
+      height = list(unit(1.2, "lines"), unit(1.2, "lines")),
+      rot = list(0, 0), size = list(6, 6), abbrv = list(TRUE, FALSE),
       center_end_labels = TRUE,
       skip = c("Holocene", "Ionian", "Greenlandian", "Northgrippian", "Meghalayan",
                "Late Pleistocene")
@@ -249,8 +239,7 @@ p1, height = 20, width = 12)
 
 # read in environmental proxies -------------------------------------------
 
-mammal_enamel_isotopes <- read_csv(paste0("C:/Users/", where_onedrive,
-                                          "/OneDrive - University of Helsinki/Documents/PhD Publications/First Publication/Input/large_mammal_isotopes.csv")) |> 
+mammal_enamel_isotopes <- read_csv("large_mammal_isotopes_20250906.csv") |> 
   mutate(Member = case_when(Formation == "Shungura" ~ paste0(Formation, " ", str_extract(Member, "^[A-Z]")), 
                             Region == "Tugen Hills" ~ Formation,
                             str_detect(Member, "Lomekwi") & !Member %in% c("Lower Lomekwi", "Upper Lomekwi") & mean_ma > 3 ~ "Lower Lomekwi",
@@ -263,8 +252,7 @@ mammal_enamel_isotopes <- read_csv(paste0("C:/Users/", where_onedrive,
   filter(n() >= 5) |> 
   ungroup()
 
-pedogenic_isotopes <-  read_csv(paste0("C:/Users/", where_onedrive,
-                                       "/OneDrive - University of Helsinki/Documents/PhD Publications/First Publication/Input/pedogenic_carbonate_isotopes.csv")) |> 
+pedogenic_isotopes <-  read_csv("pedogenic_carbonate_isotopes_09052025.csv") |> 
   mutate(Member = case_when(
                             Formation == "Tugen Hills - modern" ~ "modern",
                             Region == "Tugen Hills" ~ Formation,
@@ -447,13 +435,13 @@ cor_dataframe.1 <- region_mb_combined_CO |>
   # filter(mean_ma <= 2.7 | mean_ma >= 4) |>
   drop_na(paste0(c("mean" = "mean_", "SD" = "SD_")[trait_metrics], all_traits), 
           paste0(c("mean" = "mean_", "SD" = "SD_")[isotope_metrics], c("d13C", "d18O"))) |>  #   drop_na(paste0("SD_", all_traits), "SD_d13C", "SD_d18O")
-  filter(mean_ma <= time_bin_cutoff.2)
+  filter(mean_ma <= time_bin_cutoff.2, Member != "modern")
 
 cor_dataframe.2 <-  region_mb_combined_enamel |>
   # filter(mean_ma <= 2.7 | mean_ma >= 4) |>
   drop_na(paste0(c("mean" = "mean_", "SD" = "SD_")[trait_metrics], all_traits), 
           paste0(c("mean" = "mean_", "SD" = "SD_")[isotope_metrics], c("d13C"))) |>  #   drop_na(paste0("SD_", all_traits), "SD_d13C", "SD_d18O")
-  filter(mean_ma <= time_bin_cutoff.2)
+  filter(mean_ma <= time_bin_cutoff.2, Member != "modern")
 
 traits.1 <- cor_dataframe.1[paste0(c("mean" = "mean_", "SD" = "SD_")[trait_metrics], all_traits)]
 isotopes.1 <- cor_dataframe.1[paste0(c("mean" = "mean_", "SD" = "SD_")[isotope_metrics], c("d13C", "d18O"))]
@@ -509,8 +497,8 @@ ccora_dataframe <- region_mb_combined_CO |>                 # region_mb_combined
 trait_metrics <- "mean"
 isotope_metrics <- "mean"
 
-traits <- ccora_dataframe[paste0(c("mean" = "mean_", "SD" = "SD_")[trait_metrics], all_traits[2])]
-isotopes <- ccora_dataframe[paste0(c("mean" = "mean_", "SD" = "SD_")[isotope_metrics], c("d18O"))]
+traits <- ccora_dataframe[paste0(c("mean" = "mean_", "SD" = "SD_")[trait_metrics], all_traits)]
+isotopes <- ccora_dataframe[paste0(c("mean" = "mean_", "SD" = "SD_")[isotope_metrics], c("d13C", "d18O"))]
 
 cc <- yacca::cca(traits, isotopes, na.rm = TRUE)
 
