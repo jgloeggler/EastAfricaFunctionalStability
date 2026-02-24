@@ -18,7 +18,7 @@ Genus functional traits are given in the genus_traits.xlsx file, which lists den
 Stable isotopes data from pedogenic carbonates are given in the file pedogenic_carbonate_isotopes.xlsx. This dataset comprises C and O stable isotopes (VPDB) from literature for the relevant regions and ages.
 Sources are given in the reference sheet.
 
-### Dental enamel stable isotopes from large herbivorous mammals
+### Dental enamel stable isotopes
 
 Stable isotopes data from large mammal herbivore dental enamel are given in the file large_mammal_isotopes.xlsx. This dataset comprises C (VPDB) from literature for the relevant regions, ages, and taxa, reflecting dietary ecology of the respective communities.
 Sources are given in the reference sheet.
