@@ -1,6 +1,6 @@
 # Community-level functional stability in East African herbivores amid major environmental change
 
-This is the repository with data and code for the manuscript "Community-level functional stability in East African herbivores amid major environmental change". 
+This is the repository with data and the R script for the manuscript "Community-level functional stability in East African herbivores amid major environmental change". 
 
 ## Datasets
 
